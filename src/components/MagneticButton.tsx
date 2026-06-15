@@ -34,9 +34,13 @@ export function MagneticButton({
   const x = useSpring(offsetX, { stiffness: 260, damping: 18, mass: 0.35 })
   const y = useSpring(offsetY, { stiffness: 260, damping: 18, mass: 0.35 })
   const classes = `${variantClasses[variant]} ${className}`.trim()
+  const magneticEnabled =
+    !reducedMotion &&
+    typeof window !== 'undefined' &&
+    window.matchMedia('(hover: hover) and (pointer: fine)').matches
 
   const handlePointerMove = (event: PointerEvent<HTMLElement>) => {
-    if (reducedMotion || event.pointerType === 'touch') {
+    if (!magneticEnabled || event.pointerType === 'touch') {
       return
     }
 
@@ -62,7 +66,7 @@ export function MagneticButton({
         onPointerLeave={resetPointer}
         onPointerMove={handlePointerMove}
         rel={rel}
-        style={{ x, y }}
+        style={magneticEnabled ? { x, y } : undefined}
         target={target}
         whileTap={reducedMotion ? undefined : { scale: 0.98 }}
       >
@@ -78,7 +82,7 @@ export function MagneticButton({
       onClick={onClick}
       onPointerLeave={resetPointer}
       onPointerMove={handlePointerMove}
-      style={{ x, y }}
+      style={magneticEnabled ? { x, y } : undefined}
       type="button"
       whileTap={reducedMotion ? undefined : { scale: 0.98 }}
     >

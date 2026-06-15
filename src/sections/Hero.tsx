@@ -12,8 +12,8 @@ const heroLines = [
 export function Hero() {
   return (
     <section className="section-shell flex items-center" id="hero">
-      <div className="container-shell story-shell px-6 py-8 md:px-8 md:py-10 xl:px-12 xl:py-14">
-        <div className="relative z-10 grid items-start gap-12 lg:grid-cols-[1.02fr_0.98fr]">
+      <div className="container-shell story-shell px-5 py-6 sm:px-6 md:px-8 md:py-10 xl:px-12 xl:py-14">
+        <div className="relative z-10 grid items-start gap-8 lg:grid-cols-[1.02fr_0.98fr] lg:gap-12">
           <div className="space-y-8" data-reveal="hero">
             <div className="space-y-4">
               <p className="eyebrow">01 / Hero</p>
@@ -21,7 +21,7 @@ export function Hero() {
                 {profile.name}
               </p>
               <h1
-                className="max-w-4xl text-5xl font-semibold leading-[0.92] tracking-[-0.065em] text-[--color-text] sm:text-6xl xl:text-[clamp(4.75rem,8vw,8rem)]"
+                className="max-w-4xl text-[clamp(3.2rem,15vw,5.4rem)] font-semibold leading-[0.92] tracking-[-0.065em] text-[--color-text] sm:text-6xl xl:text-[clamp(4.75rem,8vw,8rem)]"
                 data-hero-heading
               >
                 {heroLines.map((line) => (
@@ -46,7 +46,7 @@ export function Hero() {
               </MagneticButton>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-3" data-stagger>
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3" data-stagger>
               <div className="stat-pill" data-stagger-item>
                 <div>
                   <p className="surface-label">Focus</p>
@@ -78,7 +78,7 @@ export function Hero() {
             </a>
           </div>
 
-          <div className="relative space-y-4" data-depth="24" data-parallax data-reveal="fade">
+          <div className="relative space-y-4 lg:pl-4" data-depth="24" data-parallax data-reveal="fade">
             <div className="glass-panel-strong relative overflow-hidden rounded-[2rem] p-4 md:p-5">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(214,185,129,0.24),transparent_24%),radial-gradient(circle_at_82%_18%,rgba(77,141,255,0.18),transparent_18%)]" />
               <div className="relative" data-photo-reveal>
@@ -92,10 +92,7 @@ export function Hero() {
                 </div>
               </div>
             </div>
-            <div
-              className="glass-panel relative overflow-hidden rounded-[1.7rem] p-5 md:p-6"
-              data-greeting-card
-            >
+            <div className="glass-panel relative overflow-hidden rounded-[1.7rem] p-5 md:p-6" data-greeting-card>
               <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(214,185,129,0.12),transparent_35%,rgba(77,141,255,0.1)_100%)]" />
               <div className="relative space-y-3">
                 <p className="surface-label">Personal Note</p>

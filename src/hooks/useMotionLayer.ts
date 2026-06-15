@@ -16,6 +16,8 @@ export function useMotionLayer(
       return
     }
 
+    const compactViewport = window.matchMedia('(max-width: 1023px)').matches
+
     let refreshFrame = 0
 
     const ctx = gsap.context(() => {
@@ -55,6 +57,10 @@ export function useMotionLayer(
           return
         }
 
+        if (compactViewport) {
+          return
+        }
+
         gsap.fromTo(
           section,
           { autoAlpha: 0.35, y: 120, scale: 0.92 },
@@ -87,6 +93,10 @@ export function useMotionLayer(
       })
 
       storyShells.forEach((shell, index) => {
+        if (compactViewport) {
+          return
+        }
+
         gsap.fromTo(
           shell,
           {
@@ -112,6 +122,10 @@ export function useMotionLayer(
       })
 
       strongPanels.forEach((panel, index) => {
+        if (compactViewport) {
+          return
+        }
+
         gsap.fromTo(
           panel,
           {
@@ -233,7 +247,8 @@ export function useMotionLayer(
             trigger: heading,
             start: 'top top',
             end: 'bottom top',
-            scrub: 1.1,
+            scrub: compactViewport ? false : 1.1,
+            once: compactViewport,
             invalidateOnRefresh: true,
           },
         })
@@ -307,13 +322,13 @@ export function useMotionLayer(
         )
 
         gsap.to(node, {
-          y: -18,
+          y: compactViewport ? -8 : -18,
           ease: 'none',
           scrollTrigger: {
             trigger: node,
             start: 'top bottom',
             end: 'bottom top',
-            scrub: true,
+            scrub: compactViewport ? 0.4 : true,
             invalidateOnRefresh: true,
           },
         })
@@ -350,6 +365,10 @@ export function useMotionLayer(
       const ambientBackground = document.querySelector<HTMLElement>('.ambient-bg')
 
       if (ambientBackground) {
+        if (compactViewport) {
+          return
+        }
+
         gsap.to(ambientBackground, {
           scale: 1.14,
           rotate: 10,
@@ -367,6 +386,10 @@ export function useMotionLayer(
       }
 
       parallaxNodes.forEach((node) => {
+        if (compactViewport) {
+          return
+        }
+
         const depth = Number(node.dataset.depth ?? 18)
 
         gsap.fromTo(

@@ -9,11 +9,17 @@ export function useLenis(reducedMotion: boolean) {
       return
     }
 
+    const desktopMedia = window.matchMedia('(min-width: 1024px)')
+
+    if (!desktopMedia.matches) {
+      return
+    }
+
     const lenis = new Lenis({
       autoRaf: false,
-      duration: 1.1,
+      duration: 0.9,
       lerp: 0.12,
-      wheelMultiplier: 0.95,
+      wheelMultiplier: 0.9,
       smoothWheel: true,
       syncTouch: false,
     })

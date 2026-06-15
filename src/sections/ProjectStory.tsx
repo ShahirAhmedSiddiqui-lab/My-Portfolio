@@ -10,13 +10,13 @@ type ProjectStoryProps = {
 export function ProjectStory({ project, index, onOpenProject }: ProjectStoryProps) {
   return (
     <section className="section-shell" id={project.id}>
-      <div className="container-shell grid gap-8 xl:grid-cols-[1.05fr_0.95fr]">
+      <div className="container-shell grid gap-6 lg:gap-8 xl:grid-cols-[1.05fr_0.95fr]">
         <div className="space-y-6" data-reveal="fade">
           <div className="space-y-4">
             <p className="eyebrow" style={{ color: project.accentColor }}>
               {String(index + 6).padStart(2, '0')} / {project.category}
             </p>
-            <h2 className="text-4xl font-semibold leading-[1.02] tracking-[-0.05em] text-[--color-text] sm:text-5xl xl:text-[3.7rem]">
+            <h2 className="text-[clamp(2.2rem,9vw,3.4rem)] font-semibold leading-[1.02] tracking-[-0.05em] text-[--color-text] sm:text-5xl xl:text-[3.7rem]">
               {project.title}
             </h2>
             <p className="max-w-[620px] text-base leading-8 text-[--color-text-soft] sm:text-lg">
@@ -24,7 +24,7 @@ export function ProjectStory({ project, index, onOpenProject }: ProjectStoryProp
             </p>
           </div>
 
-          <div className="glass-panel-strong rounded-[1.85rem] p-6">
+          <div className="glass-panel-strong rounded-[1.85rem] p-5 sm:p-6">
             <div className="grid gap-6 md:grid-cols-[1.2fr_0.8fr]">
               <div>
                 <p className="surface-label">Key Features</p>
@@ -51,7 +51,7 @@ export function ProjectStory({ project, index, onOpenProject }: ProjectStoryProp
 
         <div className="space-y-5" data-depth="18" data-parallax data-reveal="fade">
           <div
-            className="glass-panel-strong relative overflow-hidden rounded-[1.95rem] p-6"
+            className="glass-panel-strong relative overflow-hidden rounded-[1.95rem] p-4 sm:p-6"
             style={{
               background: `linear-gradient(155deg, ${project.accentColor}24, rgba(255,255,255,0.04) 45%, rgba(0,0,0,0.28))`,
             }}
@@ -72,7 +72,7 @@ export function ProjectStory({ project, index, onOpenProject }: ProjectStoryProp
                   background: `linear-gradient(135deg, ${project.accentColor}1f, rgba(5,5,5,0.12) 30%, rgba(5,5,5,0.82) 100%)`,
                 }}
               />
-              <div className="relative flex h-full items-end justify-between p-6">
+              <div className="relative flex h-full items-end justify-between p-4 sm:p-6">
                 <span
                   className="rounded-full border px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.22em]"
                   style={{ borderColor: `${project.accentColor}55`, color: project.accentColor, backgroundColor: 'rgba(5,5,5,0.45)' }}
@@ -103,7 +103,7 @@ export function ProjectStory({ project, index, onOpenProject }: ProjectStoryProp
             </article>
           </div>
 
-          <div className="flex flex-col gap-3 sm:flex-row">
+          <div className="flex flex-col gap-3 xl:flex-row">
             <MagneticButton href={project.liveUrl} rel="noreferrer" target="_blank" variant="secondary">
               Visit Live Website
             </MagneticButton>
