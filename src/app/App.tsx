@@ -1,5 +1,6 @@
 import { AnimatePresence } from 'motion/react'
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import { SceneCanvas } from '../components/scene/SceneCanvas'
 import { ScrollProgress } from '../components/ScrollProgress'
 import { navigationLinks, profile } from '../data/profile'
 import { projects, type Project } from '../data/projects'
@@ -20,11 +21,6 @@ import { Services } from '../sections/Services'
 import { Skills } from '../sections/Skills'
 import { WhyWorkWithMe } from '../sections/WhyWorkWithMe'
 
-const SceneCanvas = lazy(async () => {
-  const module = await import('../components/scene/SceneCanvas')
-  return { default: module.SceneCanvas }
-})
-
 const ProjectModal = lazy(async () => {
   const module = await import('../components/ProjectModal')
   return { default: module.ProjectModal }
@@ -36,25 +32,9 @@ function App() {
   const reducedMotion = useReducedMotion()
   const activeSection = useActiveSection()
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
-  const [sceneUnlocked, setSceneUnlocked] = useState(false)
-  const sceneReady = sceneUnlocked && !reducedMotion
 
   useLenis(reducedMotion)
   useMotionLayer(mainRef, reducedMotion)
-
-  useEffect(() => {
-    if (reducedMotion) {
-      return
-    }
-
-    const timeoutId = window.setTimeout(() => {
-      setSceneUnlocked(true)
-    }, 450)
-
-    return () => {
-      window.clearTimeout(timeoutId)
-    }
-  }, [reducedMotion])
 
   useEffect(() => {
     const appShell = appShellRef.current
@@ -77,11 +57,7 @@ function App() {
     <div className="relative min-h-screen overflow-hidden">
       <div ref={appShellRef}>
         <div aria-hidden="true" className="ambient-bg" />
-        {sceneReady ? (
-          <Suspense fallback={null}>
-            <SceneCanvas activeSection={activeSection} />
-          </Suspense>
-        ) : null}
+        <SceneCanvas activeSection={activeSection} />
         <ScrollProgress />
 
         <header className="sticky top-0 z-20 border-b border-white/10 bg-[rgba(5,5,5,0.82)] backdrop-blur-xl">
