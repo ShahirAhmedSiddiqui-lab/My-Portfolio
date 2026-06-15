@@ -1,4 +1,5 @@
 import { type ComponentType, type LazyExoticComponent, type ReactNode, Suspense, useEffect, useRef, useState, startTransition } from 'react'
+import { useMediaQuery } from '../hooks/useMediaQuery'
 
 type DeferredSectionProps<TProps extends Record<string, unknown>> = {
   Component: LazyExoticComponent<ComponentType<TProps>>
@@ -17,8 +18,10 @@ export function DeferredSection<TProps extends Record<string, unknown>>({
   props,
   rootMargin = '320px 0px',
 }: DeferredSectionProps<TProps>) {
+  const isMobile = useMediaQuery('(max-width: 767px)')
   const anchorRef = useRef<HTMLElement | null>(null)
   const [isReady, setIsReady] = useState(false)
+  const effectiveRootMargin = isMobile ? '140px 0px' : rootMargin
 
   useEffect(() => {
     const anchor = anchorRef.current
@@ -36,7 +39,7 @@ export function DeferredSection<TProps extends Record<string, unknown>>({
           observer.disconnect()
         }
       },
-      { rootMargin },
+      { rootMargin: effectiveRootMargin },
     )
 
     observer.observe(anchor)
@@ -44,7 +47,7 @@ export function DeferredSection<TProps extends Record<string, unknown>>({
     return () => {
       observer.disconnect()
     }
-  }, [isReady, rootMargin])
+  }, [effectiveRootMargin, isReady])
 
   if (isReady) {
     return (

@@ -1,7 +1,8 @@
-import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState, startTransition } from 'react'
 import { SectionTitle } from '../components/SectionTitle'
 import { SkillPill } from '../components/SkillPill'
 import { skillGroups } from '../data/skills'
+import { useMediaQuery } from '../hooks/useMediaQuery'
 
 const SkillsOrbitPreview = lazy(async () => {
   const module = await import('../components/skills/SkillsOrbitPreview')
@@ -9,24 +10,37 @@ const SkillsOrbitPreview = lazy(async () => {
 })
 
 export function Skills() {
+  const isMobile = useMediaQuery('(max-width: 767px)')
   const previewRef = useRef<HTMLDivElement | null>(null)
   const [previewReady, setPreviewReady] = useState(false)
+  const [previewActive, setPreviewActive] = useState(false)
 
   useEffect(() => {
     const previewNode = previewRef.current
 
-    if (!previewNode || previewReady) {
+    if (!previewNode) {
       return
     }
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries.some((entry) => entry.isIntersecting)) {
-          setPreviewReady(true)
-          observer.disconnect()
+        const isIntersecting = entries.some((entry) => entry.isIntersecting)
+
+        if (isIntersecting) {
+          startTransition(() => {
+            setPreviewReady(true)
+            setPreviewActive(true)
+          })
+          return
+        }
+
+        if (isMobile) {
+          startTransition(() => {
+            setPreviewActive(false)
+          })
         }
       },
-      { rootMargin: '240px 0px' },
+      { rootMargin: isMobile ? '120px 0px' : '240px 0px' },
     )
 
     observer.observe(previewNode)
@@ -34,7 +48,9 @@ export function Skills() {
     return () => {
       observer.disconnect()
     }
-  }, [previewReady])
+  }, [isMobile])
+
+  const shouldRenderPreview = isMobile ? previewReady && previewActive : previewReady
 
   return (
     <section className="section-shell" id="skills">
@@ -51,9 +67,9 @@ export function Skills() {
               className="relative aspect-square overflow-hidden rounded-[1.6rem] border border-white/10 bg-[radial-gradient(circle_at_50%_34%,rgba(214,185,129,0.14),transparent_20%),radial-gradient(circle_at_72%_64%,rgba(124,255,178,0.12),transparent_26%),radial-gradient(circle_at_24%_28%,rgba(77,141,255,0.14),transparent_22%),linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.42))]"
               ref={previewRef}
             >
-              {previewReady ? (
+              {shouldRenderPreview ? (
                 <Suspense fallback={<div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(214,185,129,0.08),transparent_42%)]" />}>
-                  <SkillsOrbitPreview />
+                  <SkillsOrbitPreview isMobile={isMobile} />
                 </Suspense>
               ) : (
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(214,185,129,0.08),transparent_42%)]" />

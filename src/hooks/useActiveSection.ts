@@ -5,12 +5,6 @@ export function useActiveSection() {
   const [activeSection, setActiveSection] = useState<SceneSection>('hero')
 
   useEffect(() => {
-    const sections = Array.from(document.querySelectorAll<HTMLElement>('main section[id]'))
-
-    if (!sections.length) {
-      return
-    }
-
     const observer = new IntersectionObserver(
       (entries) => {
         const visibleEntries = entries
@@ -22,8 +16,11 @@ export function useActiveSection() {
         }
 
         const nextSection = visibleEntries[0].target.getAttribute('id')
+        const normalizedSection = normalizeSceneSection(nextSection)
 
-        setActiveSection(normalizeSceneSection(nextSection))
+        setActiveSection((currentSection) =>
+          currentSection === normalizedSection ? currentSection : normalizedSection,
+        )
       },
       {
         root: null,
@@ -32,11 +29,37 @@ export function useActiveSection() {
       },
     )
 
-    sections.forEach((section) => {
-      observer.observe(section)
+    const observedSections = new Set<HTMLElement>()
+    const main = document.querySelector('main')
+
+    if (!main) {
+      observer.disconnect()
+      return
+    }
+
+    const observeSections = () => {
+      const sections = Array.from(main.querySelectorAll<HTMLElement>('section[id]'))
+
+      sections.forEach((section) => {
+        if (observedSections.has(section)) {
+          return
+        }
+
+        observer.observe(section)
+        observedSections.add(section)
+      })
+    }
+
+    observeSections()
+
+    const mutationObserver = new MutationObserver(() => {
+      observeSections()
     })
 
+    mutationObserver.observe(main, { childList: true, subtree: true })
+
     return () => {
+      mutationObserver.disconnect()
       observer.disconnect()
     }
   }, [])
