@@ -11,32 +11,33 @@ export function useActiveSection() {
       return
     }
 
-    const updateActiveSection = () => {
-      const viewportCenter = window.innerHeight * 0.45
-      let nearestSectionId = 'hero'
-      let nearestDistance = Number.POSITIVE_INFINITY
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleEntries = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((entryA, entryB) => entryB.intersectionRatio - entryA.intersectionRatio)
 
-      sections.forEach((section) => {
-        const rect = section.getBoundingClientRect()
-        const sectionCenter = rect.top + rect.height / 2
-        const distance = Math.abs(sectionCenter - viewportCenter)
-
-        if (distance < nearestDistance) {
-          nearestDistance = distance
-          nearestSectionId = section.id
+        if (!visibleEntries.length) {
+          return
         }
-      })
 
-      setActiveSection(normalizeSceneSection(nearestSectionId))
-    }
+        const nextSection = visibleEntries[0].target.getAttribute('id')
 
-    updateActiveSection()
-    window.addEventListener('scroll', updateActiveSection, { passive: true })
-    window.addEventListener('resize', updateActiveSection)
+        setActiveSection(normalizeSceneSection(nextSection))
+      },
+      {
+        root: null,
+        rootMargin: '-24% 0px -42% 0px',
+        threshold: [0.2, 0.35, 0.5, 0.65],
+      },
+    )
+
+    sections.forEach((section) => {
+      observer.observe(section)
+    })
 
     return () => {
-      window.removeEventListener('scroll', updateActiveSection)
-      window.removeEventListener('resize', updateActiveSection)
+      observer.disconnect()
     }
   }, [])
 

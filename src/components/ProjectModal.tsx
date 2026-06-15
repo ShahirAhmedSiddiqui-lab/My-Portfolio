@@ -109,7 +109,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
           role="dialog"
           transition={reducedMotion ? { duration: 0.12 } : { duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
         >
-          <div className="grid h-[100dvh] overflow-y-auto sm:max-h-[92vh] sm:h-auto xl:grid-cols-[1.08fr_0.92fr]">
+          <div className="grid h-[100dvh] overflow-y-auto overscroll-contain sm:max-h-[92vh] sm:h-auto xl:grid-cols-[1.08fr_0.92fr]">
           <div
             className="relative min-h-[300px] border-b border-white/10 xl:min-h-full xl:border-b-0 xl:border-r"
             style={{ borderColor: `${project.accentColor}28` }}

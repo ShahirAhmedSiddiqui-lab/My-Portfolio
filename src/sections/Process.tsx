@@ -6,6 +6,8 @@ import { useReducedMotion } from '../hooks/useReducedMotion'
 
 export function Process() {
   const sectionRef = useRef<HTMLElement | null>(null)
+  const frameRef = useRef<number | null>(null)
+  const lastStepRef = useRef(-1)
   const reducedMotion = useReducedMotion()
   const [activeStep, setActiveStep] = useState(-1)
 
@@ -23,9 +25,18 @@ export function Process() {
     const resolveStepIndex = (progress: number) =>
       Math.min(stepCount - 1, Math.max(0, Math.round(progress * (stepCount - 1))))
 
+    const commitStep = (nextStep: number) => {
+      if (lastStepRef.current === nextStep) {
+        return
+      }
+
+      lastStepRef.current = nextStep
+      setActiveStep(nextStep)
+    }
+
     const updateProgress = () => {
       if (!media.matches) {
-        setActiveStep(-1)
+        commitStep(-1)
         return
       }
 
@@ -33,7 +44,7 @@ export function Process() {
       const activationPoint = window.innerHeight * 0.14
 
       if (rect.top > activationPoint) {
-        setActiveStep(-1)
+        commitStep(-1)
         return
       }
 
@@ -41,7 +52,18 @@ export function Process() {
       const stickyTravel = Math.max(section.offsetHeight - viewportHeight, 1)
       const consumed = Math.min(Math.max(-rect.top, 0), stickyTravel)
       const progress = consumed / stickyTravel
-      setActiveStep(resolveStepIndex(progress))
+      commitStep(resolveStepIndex(progress))
+    }
+
+    const scheduleUpdate = () => {
+      if (frameRef.current !== null) {
+        return
+      }
+
+      frameRef.current = window.requestAnimationFrame(() => {
+        frameRef.current = null
+        updateProgress()
+      })
     }
 
     const handleChange = () => {
@@ -49,13 +71,16 @@ export function Process() {
     }
 
     updateProgress()
-    window.addEventListener('scroll', updateProgress, { passive: true })
-    window.addEventListener('resize', updateProgress)
+    window.addEventListener('scroll', scheduleUpdate, { passive: true })
+    window.addEventListener('resize', scheduleUpdate)
     media.addEventListener('change', handleChange)
 
     return () => {
-      window.removeEventListener('scroll', updateProgress)
-      window.removeEventListener('resize', updateProgress)
+      if (frameRef.current !== null) {
+        window.cancelAnimationFrame(frameRef.current)
+      }
+      window.removeEventListener('scroll', scheduleUpdate)
+      window.removeEventListener('resize', scheduleUpdate)
       media.removeEventListener('change', handleChange)
     }
   }, [reducedMotion])

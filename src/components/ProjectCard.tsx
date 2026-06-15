@@ -70,14 +70,11 @@ export function ProjectCard({ project, onOpenProject }: ProjectCardProps) {
 
         <div className="mt-6 flex flex-col gap-3">
           <MagneticButton className="w-full" onClick={() => onOpenProject(project)} variant="secondary">
-            Open Case Study
+            Case Study
           </MagneticButton>
-          <div className="flex flex-col gap-3 sm:flex-row">
+          <div className="flex flex-col gap-3">
             <MagneticButton className="flex-1" href={project.liveUrl} rel="noreferrer" target="_blank">
               Live Site
-            </MagneticButton>
-            <MagneticButton className="flex-1" href={`#${project.id}`} variant="ghost">
-              Open Chapter
             </MagneticButton>
           </div>
         </div>

@@ -3,7 +3,7 @@ import gsap from 'gsap'
 import Lenis from 'lenis'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-export function useLenis(reducedMotion: boolean) {
+export function useLenis(reducedMotion: boolean, isLocked = false) {
   useEffect(() => {
     if (reducedMotion) {
       return
@@ -34,6 +34,12 @@ export function useLenis(reducedMotion: boolean) {
       lenis.raf(time * 1000)
     }
 
+    if (isLocked) {
+      lenis.stop()
+    } else {
+      lenis.start()
+    }
+
     gsap.ticker.add(updateLenis)
     gsap.ticker.lagSmoothing(0)
     ScrollTrigger.refresh()
@@ -42,5 +48,5 @@ export function useLenis(reducedMotion: boolean) {
       gsap.ticker.remove(updateLenis)
       lenis.destroy()
     }
-  }, [reducedMotion])
+  }, [isLocked, reducedMotion])
 }
