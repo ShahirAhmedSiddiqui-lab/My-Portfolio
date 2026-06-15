@@ -37,15 +37,16 @@ type SceneCanvasProps = {
 export function SceneCanvas({ activeSection }: SceneCanvasProps) {
   const reducedMotion = useReducedMotion()
   const isMobile = useSceneViewport()
-  const sceneState = sceneStates[activeSection]
-  const [sceneQuality, setSceneQuality] = useState(1)
+  const sceneState = isMobile ? sceneStates.hero : sceneStates[activeSection]
+  const [desktopSceneQuality, setDesktopSceneQuality] = useState(1)
+  const sceneQuality = isMobile ? 0.78 : desktopSceneQuality
   const lightingIntensity = sceneQuality < 0.9 ? 0.88 : 1
 
   return (
     <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-[1] overflow-hidden">
       <Canvas
-        camera={{ fov: isMobile ? 40 : sceneState.cameraFov, position: [0, 0, 8] }}
-        dpr={isMobile ? [1, 1] : reducedMotion ? [1, 1.2] : sceneQuality < 0.9 ? [1, 1.2] : [1, 1.5]}
+        camera={{ fov: isMobile ? sceneStates.hero.cameraFov : sceneState.cameraFov, position: [0, 0, 8] }}
+        dpr={isMobile ? [0.8, 1] : reducedMotion ? [1, 1.2] : sceneQuality < 0.9 ? [1, 1.2] : [1, 1.5]}
         gl={{
           alpha: true,
           antialias: !isMobile,
@@ -58,51 +59,57 @@ export function SceneCanvas({ activeSection }: SceneCanvasProps) {
         }}
       >
         <Suspense fallback={null}>
-          <PerformanceMonitor
-            bounds={() => (isMobile ? [0.65, 0.9] : [0.7, 1])}
-            onDecline={() => {
-              setSceneQuality(0.82)
-            }}
-            onIncline={() => {
-              setSceneQuality(1)
-            }}
-          />
+          {!isMobile ? (
+            <PerformanceMonitor
+              bounds={() => [0.7, 1]}
+              onDecline={() => {
+                setDesktopSceneQuality(0.82)
+              }}
+              onIncline={() => {
+                setDesktopSceneQuality(1)
+              }}
+            />
+          ) : null}
           <AdaptiveDpr pixelated />
-          <AdaptiveEvents />
+          {!isMobile ? <AdaptiveEvents /> : null}
           <CameraRig reducedMotion={reducedMotion} sceneState={sceneState} />
           <color attach="background" args={['#050505']} />
           <fog attach="fog" args={['#050505', 9, 16]} />
-          <ambientLight intensity={0.34 * lightingIntensity} />
-          <hemisphereLight args={['#f5f0e8', '#040506', 0.95 * lightingIntensity]} />
+          <ambientLight intensity={(isMobile ? 0.28 : 0.34) * lightingIntensity} />
+          <hemisphereLight args={['#f5f0e8', '#040506', (isMobile ? 0.72 : 0.95) * lightingIntensity]} />
           <directionalLight
             castShadow={!isMobile}
             color="#f6e7c1"
-            intensity={1.55 * lightingIntensity}
+            intensity={(isMobile ? 1.18 : 1.55) * lightingIntensity}
             position={[3.4, 4.2, 5]}
             shadow-mapSize-height={1024}
             shadow-mapSize-width={1024}
           />
-          <directionalLight color="#9bc8ff" intensity={0.55 * lightingIntensity} position={[-4.2, 1.8, 3.6]} />
+          {!isMobile ? (
+            <directionalLight color="#9bc8ff" intensity={0.55 * lightingIntensity} position={[-4.2, 1.8, 3.6]} />
+          ) : null}
           <pointLight
             color={sceneState.secondaryAccent}
             distance={10}
-            intensity={(isMobile ? 8 : 11) * lightingIntensity}
+            intensity={(isMobile ? 6 : 11) * lightingIntensity}
             position={[3.4, 1.2, 3.4]}
           />
           <pointLight
             color={sceneState.accent}
             distance={11}
-            intensity={(isMobile ? 5 : 7) * lightingIntensity}
+            intensity={(isMobile ? 4.2 : 7) * lightingIntensity}
             position={[0.8, -2.2, 2.8]}
           />
-          <spotLight
-            angle={0.46}
-            color={sceneState.accent}
-            distance={12}
-            intensity={(isMobile ? 4 : 6) * lightingIntensity}
-            penumbra={0.65}
-            position={[-1.4, 3.4, 4.6]}
-          />
+          {!isMobile ? (
+            <spotLight
+              angle={0.46}
+              color={sceneState.accent}
+              distance={12}
+              intensity={6 * lightingIntensity}
+              penumbra={0.65}
+              position={[-1.4, 3.4, 4.6]}
+            />
+          ) : null}
           <DigitalCore
             isMobile={isMobile}
             reducedMotion={reducedMotion}
@@ -120,7 +127,7 @@ export function SceneCanvas({ activeSection }: SceneCanvasProps) {
               scale={10}
             />
           ) : null}
-          <Preload all />
+          {!isMobile ? <Preload all /> : null}
         </Suspense>
       </Canvas>
 
